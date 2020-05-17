@@ -15,7 +15,7 @@ When setting a password, data is encrypted using AES, password is hashed via SHA
 With no individual password the contact data is encrypted with a default password.
 
 ## Used Libs
-- [crypto-js](https://github.com/brix/crypto-js) under [The MIT Licenseb](https://github.com/brix/crypto-js/blob/develop/LICENSE)
+- [crypto-js](https://github.com/brix/crypto-js) under [The MIT License](https://github.com/brix/crypto-js/blob/develop/LICENSE)
 - [simple-app-Shell](https://github.com/cjpjwa/simple-app-shell) under [The MIT License](https://github.com/cjpjwa/simple-app-shell/blob/master/LICENSE)
 
 ## License
