@@ -19,4 +19,4 @@ With no individual password the contact data is encrypted with a default passwor
 - [simple-app-Shell](https://github.com/cjpjwa/simple-app-shell) under [The MIT License](https://github.com/cjpjwa/simple-app-shell/blob/master/LICENSE)
 
 ## License
-Simple Tracer is licensed under [The MIT License] (https://github.com/cjpjwa/simple-tracer/blob/master/LICENSE)
+Simple Tracer is licensed under [The MIT License](https://github.com/cjpjwa/simple-app-shell/blob/master/LICENSE)
