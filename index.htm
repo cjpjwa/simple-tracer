@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="de">
+<head> 
+<!-- general  -->
+<title>Simple Tracer</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="keywords" content="tracer, protokoll, kontakt-tagebuch" />
+<meta name="description" content="Einfaches Kontakt-Tagebuch" />
+<meta name="Author" content="P. Janko" />
+<!-- manifest file -->
+<link rel="manifest" href="manifest.json" />
+<!-- ios webapp  -->
+<meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+<!-- chrome webapp  -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#cccccc" />
+<link rel="icon" sizes="144x144" href="icon_144.png" />
+<link rel="icon" sizes="192x192" href="icon_192.png" />
+<link rel="icon" sizes="512x512" href="icon_512.png" />
+<!-- win tile icon and background  -->
+<meta name="msapplication-TileColor" content="#999999" />
+<meta name="msapplication-TileImage" content="icon_144.png" />
+<!-- icon -->
+<link rel="shortcut icon" href="favicon.ico" />
+<style>
+/* ########## basic page settings ##########  */
+body				{padding:0px; margin:0px; background:#cccccc; color:#333333; font-family:sans-serif; overflow:auto;-webkit-text-size-adjust: none;}
+*:focus 			{outline: none;}
+.page				{padding: 0px; margin:0px; display:none;-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;-o-user-select: none;user-select: none;}
+
+.header				{position:fixed; top: 0px;  left: 0px; padding:0px; margin:0px; background:#333333; height:55px; width:100%; z-index:100}
+.header	h1			{position:fixed; top:14px;  left:10px; padding:0px; margin:0px; color:#eeeeee; font-weight:normal; font-size:22px;}
+.header	a			{position:fixed; padding:7px; margin:0px; color:#eeeeee; font-weight:normal; font-size:16px; border: 1px solid #eeeeee; border-radius:5px;}
+.header	a.button0	{display:block; top:14px; left: 15px; text-decoration:none; padding:0px; margin:0px; color:#eeeeee; font-weight:normal; font-size:22px; border:none}
+.header	a.button1	{display:block; top:10px; right:10px; text-decoration:none;}
+.header	a.button2	{display:block; top:10px; right:60px; text-decoration:none;}
+.header	a:active	{color:#333333; background:#eeeeee}
+
+.content			{position:absolute; top:55px; left:0px; width:100%; padding: 0px; margin:0px; color:#333333;; z-index:10;}
+.content h2			{padding: 0px; margin:10px 25px 10px 25px; font-size:20px; font-weight:bold;}
+.content p 			{padding: 0px; margin:10px 25px 10px 25px; font-size:14px; font-weight:normal;}
+.content li			{padding: 0px 0px 5px 0px; margin: 0px; font-size:14px; font-weight:normal;}
+.content a			{color:#333333}
+
+/* table items start page */
+.content #tlogitems table			{padding:0px; margin:10px auto; border-collapse:collapse; background:#cccccc; font-weight:bold; font-size:16px; width:95%; border-bottom: 1px solid #cccccc;}
+.content #tlogitems table th		{padding:3px 10px 3px 15px; background:#666666; color:#eeeeee; border: none;}
+
+.content #tlogitems table th:first-child						{border-top-left-radius: 10px;}
+.content #tlogitems table th:last-child							{border-top-right-radius: 10px;}
+
+.content #tlogitems table td				{padding:5px 10px 0px 15px; background: none; border-top: 1px solid #999999}
+.content #tlogitems table th button			{padding:6px 8px 4px 8px; margin:4px 10px 4px 0px; color:#eeeeee; background:#333333; font-weight:bold; font-size:16px; border:1px solid #eeeeee;}
+.content #tlogitems table th.mright button 	{padding:0px;margin:0px 10px 0px 0px;font-size:28px; background:none; border:none}
+.content #tlogitems table td button			{padding:0px 5px 0px 0px; margin:0px; color:#333333; background: none; font-weight:bold; font-size:42px; border: none}
+.content #tlogitems table .mright	{text-align: right;}
+.content #tlogitems table .mleft	{text-align: left;}
+.content #tlogitems table .comment	{padding:0px 10px 5px 15px; font-size:14px; background:none; border-top: none; font-weight:normal;}
+.content #tlogitems tbody			{display:none;}
+.content #tlogitems table tfoot td	{background:#eeeeee;}
+
+.content table .bg_1				{background:#ffE0a3;}
+.content table .bg_5,.bg_10			{background:#faceca;}
+.content table .bg_15,.bg_20		{background:#f1acab;}
+.content table .bg_25		        {background:#ff989a;}
+ 
+/* new entry page */
+.content #newentryform					{padding:10px 0px 0px 0px; margin:0px; text-align:center}
+.content #newentryform .lhead			{padding:0px; margin:20px 10px 10px 10px; font-size:20px; font-weight:bold; display:block}
+.content #newentryform table			{padding:0px; margin:0 auto; margin-bottom:5px; border-collapse: collapse; width:90%}
+.content #newentryform table td			{padding:0px; font-size:14px; width:9%}
+
+.content #newentryform #tlogduration 						{padding:0px 5px 0px 5px; margin:5px 0px 15px 0px; height:10px; width: 86%; background:#ffffff; border:1px solid #333333; border-radius:5px; -webkit-appearance: none;}
+.content #newentryform #tlogduration::-webkit-slider-thumb 	{width:25px; height:25px; background: #333333; border:1px solid #eeeeee; border-radius:5px; cursor: pointer; -webkit-appearance: none; appearance: none;}
+.content #newentryform #tlogduration::-moz-range-thumb 		{width:25px; height:25px; background: #333333; border:1px solid #eeeeee; border-radius:5px; cursor: pointer;}
+
+.content #newentryform #tlogcomment::placeholder {font-weight:normal; color: #cccccc; opacity: 1;}
+.content #newentryform #tlogcomment		{padding:7px 0px 7px 10px; margin:5px 0px 15px 0px; color:#333333; width:86%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:bold; font-size:20px;}
+.content #newentryform #tlogdatetime	{padding:5px 0px 5px 10px; margin:5px 0px 10px 0px; color:#333333; width:86%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:bold; font-size:20px;}
+
+.content button 					{color:#eeeeee; text-align:center; padding:15px 10px 15px 10px; margin:0px; background:#333333; border:1px solid #eeeeee; cursor:pointer; border-radius:5px; font-size:16px; font-weight: normal;}
+.content button.blarge 				{display:block; width:90%; margin:20px auto; font-weight:normal; font-size:20px;}
+.content pre#csvreport				{padding:8px; margin:10px auto; background:#eeeeee; color:#333333; font-family:monospace; font-weight:normal; font-size:14px; width:84%; height:300px; border:1px solid #333333; border-radius:5px; overflow:auto;}
+
+/* pw styles */
+#pwinit					{display:none; position:fixed; left:10px; top:10px; right:10px; bottom:15px; padding:10px 20px 10px 20px; margin:0px; overflow:auto; background:#cccccc; border:1px solid #333333; text-align:center; border-radius:5px; box-shadow: 1px 1px 10px 1px #666666; z-index:1100;}
+#pwchange				{display:none; position:fixed; left:10px; top:10px; right:10px; bottom:15px; padding:10px 20px 10px 20px; margin:0px; overflow:auto; background:#cccccc; border:1px solid #333333; text-align:center; border-radius:5px; box-shadow: 1px 1px 10px 1px #666666; z-index:1100;}
+#pwlogin				{display:none;  position:fixed; left:5px; top:5px; right:5px; bottom:5px; padding:30px 20px 20px 20px; margin:0px; overflow:auto; background:#cccccc; border:1px solid #333333; text-align:center; border-radius:5px; box-shadow: 1px 1px 10px 1px #666666; z-index:1300;}
+.pwform p,label			{display:block; padding: 5px 0px 5px 0px; margin:0px; font-size:16px; font-weight:normal;}
+.pwform h2 				{padding: 15px 0px 5px 0px; margin:0px; font-size:20px; font-weight:bold;}
+.pwform					{padding:0px; margin:0px;}
+.pwform button			{padding:8px 0px 8px 0px; margin:15px 0px 15px 0px; color:#eeeeee; width:75%; background:#333333; border:1px solid #eeeeee; border-radius:5px; font-weight:normal; font-size:16px; text-align:center; cursor:pointer;}
+.pwform button.blite	{margin-top:5px; color:#333333; background:#eeeeee; border:1px solid #333333;}
+.pwform input[type=password]	{padding:5px 0px 5px 5px; margin: 0px 0px 5px 0px; color:#333333; width:75%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:normal; font-size:16px;}
+
+/* ########## footer settings ##########  */
+p.footer			{padding:5px 0px 10px 0px; margin:0px; color:#333333; font-weight:normal; font-size:16px; text-align:center;}
+p.footer a			{color:#333333}
+
+/* ########## info settings ##########  */
+#info .content h2	{padding: 10px 30px 10px 30px; margin: 0px; font-weight:bold; font-size:20px;}
+#info .content p	{padding:  5px 30px 10px 30px; margin: 0px; text-align:justify}
+#info .content ul	{padding:  5px 30px 10px 30px; margin: 0px 0px 0px 5%}
+#info .content li	{text-align:left}
+
+/* Larger info text in landscape  */
+@media (min-width: 550px) and (orientation: landscape) {
+#info .content h2	{font-size:22px;}
+#info .content p 	{font-size:20px;}
+#info .content li	{font-size:20px;}
+}
+
+/* Larger than 800px  */
+@media (min-width: 800px) {
+.content								{width:800px; left:50%; margin-left:-400px; margin-top:20px;}
+.content button.blarge 					{width:770px;}
+.content #newentryform table			{width:758px;}
+.content #newentryform #tlogduration	{width:758px;}
+.content #newentryform #tlogcomment		{width:758px;}
+.content #newentryform #tlogdatetime	{width:758px;}
+.pwform									{width:800px; margin:0px auto;}
+}
+</style>
+<script src="crypto-js.js"></script>
+<script>
+//##########################################################
+// Simple Tracer, (c) 2020 webapps@cjpj, P. Janko
+// MIT License: https://www.cjpj.de/contact.htm#terms
+//##########################################################
+// Date			Version			Description
+// 17.05.2020	0.1alpha 		initial test version
+//##########################################################
+// based on: https://www.cjpj.de/appshell.htm
+// Simple App Shell, (c) 2020 webapps@cjpj, P. Janko
+// MIT License: https://www.cjpj.de/contact.htm#terms
+//##########################################################
+// using crypto-js: https://github.com/brix/crypto-js
+// The MIT License (MIT) (http://opensource.org/licenses/MIT)
+// Copyright (c) 2009-2013 Jeff Mott
+// Copyright (c) 2013-2016 Evan Vosberg
+//##########################################################
+//strict mode
+"use strict";
+
+//##########################################################
+//basic global vars
+var appVersion = "0.1alpha Test";
+var appRelease = "17.05.2020";
+//global array with all pages
+var appPages = new Array();
+var maxNofItems = 500; 			//set max number of items
+var curNofItems = 0;			//set current number of items global
+var reCheck = /[<>&;\\"]/; 		//regex with not allowed chars in hinweis
+//global vars for pw
+var reCheckPW = /^[0-9A-Za-z]*$/; 	//regex for pw: only letters, numbers
+var pwMin = 4;						//pw min length
+var pwMax = 20;						//pw max length (also check maxlength attribute in input)
+var currentPWHash = "";				//pw hash
+var currentPWDate = "";             //pw date/time
+var defaultPW = "000";				//000 default if no pw set by user
+var cryptoPW = defaultPW;			//pw used for encryption/decryption
+//array for week days
+var weekDay = new Array();
+weekDay[0] = "Sonntag";
+weekDay[1] = "Montag";
+weekDay[2] = "Dienstag";
+weekDay[3] = "Mittwoch";
+weekDay[4] = "Donnerstag";
+weekDay[5] = "Freitag";
+weekDay[6] = "Samstag";
+
+//basic messages
+var msg01 = "Achtung, maximale Anzahl von " + maxNofItems + " Einträgen erreicht!\nSie müssen Einträge löschen, bevor sie neue hinzufügen können.";
+var msg02 = "Bitte gültige Daten für Datum/Uhrzeit eingeben";
+var msg03 = "<hr /><br /><h2 style=\"text-align:center;\">Simple Tracer<br />Keine Einträge vorhanden!</h2>";
+var msg04 = "<p style=\"text-align:center; font-size:16px;\">Bitte oben <strong>Neuer Eintrag</strong> wählen!</p><br /><hr />";
+var msg05 = "Diesen Eintrag löschen?";
+var msg06 = "Diesen Tag löschen?";
+var msg07 = "Alle Einträge wirklich löschen?\nDiese Aktion kann nicht rückgängig gemacht werden!";
+var msg08 = "Achtung!\n\nDer Browser untersützt keine Datenspeicherung.\nVerwendung nicht möglich (no IndexedDB)!";
+var msg09 = "Fehler beim Anlegen der Datenbank.\nBitte App komplett schließen und erneut versuchen!";
+var msg10 = "Speichern fehlgeschlagen!\nBitte erneut versuchen!";
+var msg11 = "Löschen fehlgeschlagen!\nBitte erneut versuchen!";
+var msg12 = "Folgende Zeichen dürfen nicht verwendet werden:\n\n > < ; & \\ \" ";
+var msg13 = "Bitte Kontaktinfo eingeben (z.B. Name, Ort)!";
+//password messages
+var msgP01 = "Passwort erfolgreich gespeichert!";
+var msgP02 = "Ungültiges Passwort!\nBitte gültiges Passwort eingeben!\nZwischen 4 und 20 Zeichen,\nnur Buchstaben und Zahlen\nkeine Sonderzeichen, keine Umlaute";
+var msgP03 = "Passwörter stimmen nicht überein!\nBitte erneut versuchen.";
+var msgP04 = "Achtung!\n\nDer Browser untersützt keine Datenspeicherung.\nVerwendung nicht möglich (no localstorage)!";
+var msgP05 = "Falsches altes Passwort.\nBitte erneut versuchen!";
+var msgP06 = "Passwortschutz wirklich entfernen?";
+var msgP07 = "Passwortschutz wurde erfolgreich entfernt!";
+//status messages
+var msgS01 = "Verbunden";
+var msgS02 = "Getrennt";
+var msgS03 = "Ja - Offline verfügbar";
+var msgS04 = "Nein - <a href=\"index.htm\">In Cache laden</a>";
+var msgS05 = "Update verfügbar - <a href=\"index.htm\">Update laden</a>";
+
+//##########################################################
+//register the serviceworker
+if ("serviceWorker" in navigator) {
+	window.addEventListener("load", function() {
+		navigator.serviceWorker.register("/serviceworker.js").then(function(registration) {
+			updateViaCache: "none";    //bypass http cache
+			// Registration was successful
+			//console.log("ServiceWorker registration successful with scope: ", registration.scope);
+			//check for update
+			registration.addEventListener("updatefound", function() {
+				document.getElementById("supdate").innerHTML = msgS05;
+			});
+		}).catch(function(err) {
+			// registration failed :(
+			//console.log("ServiceWorker registration failed: ", err);
+		});
+	});
+}
+//##########################################################
+
+//##########################################################
+//set div page display from none to block based on hash
+function showPage() {
+	//set first page for no hashid given
+	var divID = appPages[0].getAttribute("id");
+	//get page div id from hash
+	if ((location.hash !== "") && (location.hash !== undefined)) {divID = location.hash.substring(1);}
+	//hide all pages first
+	for (var i = 0; i < appPages.length; i++) {
+		var pageID1 = appPages[i].getAttribute("id");
+		document.getElementById(pageID1).style.display = "none";
+	}
+	//only show pages for existing IDs (whitelist)
+	var whitelistPage = false;
+	for (var n = 0; n < appPages.length; n++) {
+		var pageID2 = appPages[n].getAttribute("id");
+		if (divID === pageID2) {whitelistPage = true;}
+	}
+	//set first page for id not whitelisted
+	if (!whitelistPage) {divID = appPages[0].getAttribute("id");}
+	//reset new entry form on open
+	if (divID === "newentry") {
+		document.getElementById("newentryform").reset();
+		document.getElementById('sval').innerHTML = "5";
+	}
+	//show page and scroll to top
+	document.getElementById(divID).style.display = "block";
+	document.body.scrollTop = 0; 			//Chrome, Safari
+	document.documentElement.scrollTop= 0;	//Firefox, IE
+}
+
+//##########################################################
+//set app status for network, chaching
+//Note: update is handled in SW registration
+function setAppStatus() {
+	//set network status initial and listener
+	if (window.navigator.onLine) {document.getElementById("snet").innerHTML = msgS01;} else {document.getElementById("snet").innerHTML = msgS02;}
+	window.addEventListener("online", function(e)  {document.getElementById("snet").innerHTML = msgS01;});
+	window.addEventListener("offline", function(e) {document.getElementById("snet").innerHTML = msgS02;});
+	//set cache status (considered as chached if index.htm found)
+	try {
+		caches.match("/index.htm").then(function(cacheResponse) {
+			//console.log('#####cacheResponse ', cacheResponse);
+			if (cacheResponse) {
+				document.getElementById("scache").innerHTML = msgS03;
+			} else {
+				document.getElementById("scache").innerHTML = msgS04;
+			}
+		});
+	} catch(err) {
+		//console.log('#####cacheError ', err);
+		document.getElementById("scache").innerHTML = "-";
+	}
+}
+
+//##########################################################
+//init app, set version, check deep links, show start page
+function initApp() {
+	//fill array with pages
+	appPages = document.querySelectorAll("div.page");
+	//show start page or deep link page
+	showPage();
+	//init handler for hash navigation
+	window.addEventListener("hashchange", showPage);
+	//set version
+	document.getElementById("version").innerHTML = appVersion;
+	document.getElementById("release").innerHTML = appRelease;
+	var footerVer = document.querySelectorAll("span.fversion");
+	for (var i = 0; i < footerVer.length; i++) {
+		footerVer[i].innerHTML = appVersion;
+	}
+	//set app status
+	setAppStatus();
+	//check for pw and load
+	if (loadPassword()) {
+		//############## user has set a pw ##################
+		//note: createIndexedDB() is called in checkPassword()
+		//show login pw popup, set last pw change
+		document.getElementById("pwlogin").style.display = "block";
+		document.getElementById("loginpw").focus(); //set focus to field
+		document.getElementById("pwdate").innerHTML = currentPWDate;
+		//show logout button and button to change pw
+		document.getElementById("logoutbutton").style.display = "block";
+		document.getElementById("changepwbutton").style.display = "block";
+		//hide button to set a pw
+		document.getElementById("setpwbutton").style.display = "none";
+	} else {
+		//############## user has NOT set a pw ##################
+		//create indexedDB and update startpage
+		createIndexedDB();
+		//hide login pw popup
+		showHideModal(false,"pwlogin");
+		//hide logout button and button to change pw
+		document.getElementById("logoutbutton").style.display = "none";
+		document.getElementById("changepwbutton").style.display = "none";
+		//show button to set a pw
+		document.getElementById("setpwbutton").style.display = "block";
+	}
+}
+
+//##########################################################
+//           Simnple Tracer App Code
+//##########################################################
+
+//##########################################################
+//create/open an indexedDB for storing data and update startpage
+//show content of db on startpage
+var db;
+function createIndexedDB() {
+	if (!window.indexedDB) {
+		alert(msg08);
+		return;
+	} else {
+		var requestDB = window.indexedDB.open("tlogDB", 1);
+		//error
+		requestDB.onerror = function(err) {
+			//console.log("Error DB: " + err.target.errorCode);
+			alert(msg09);
+		};
+		//upgrade if not exist
+		requestDB.onupgradeneeded = function(event) {
+			//console.log('Upgrade DB');
+			var db = event.target.result;
+			if (!db.objectStoreNames.contains("tlogData")) {
+				var objStore = db.createObjectStore("tlogData", {keyPath: "id", autoIncrement: true});
+				objStore.createIndex("date", "date", {unique: false});
+				objStore.createIndex("time", "time", {unique: false});
+				objStore.createIndex("comment", "comment", {unique: false});
+				objStore.createIndex("duration", "duration", {unique: false});
+			}
+		};
+		//success
+		requestDB.onsuccess = function(event) {
+			//console.log("Open DB");
+			db = this.result;      // Equal to: db = req.result;
+			//update startpage
+			refreshStartPage();
+		};
+	}
+}
+
+//##########################################################
+//add new item to indexedDB and update startpage
+//- newJsonItem:	new item data in json format [json]
+function addToIndexedDB(newJsonItem) {
+	var transaction = db.transaction(["tlogData"], "readwrite");
+	var tlogData = transaction.objectStore("tlogData");
+ 	var requestAdd = tlogData.add(newJsonItem);
+	requestAdd.onerror = function(err) {
+		//console.log("Error Add: " + err.target.error.name);
+		alert(msg10);
+	};
+	requestAdd.onsuccess = function(event) {
+		//console.log("Add OK");
+		//show startpage
+		location.hash = "appstart";
+		//reset new item page
+		document.getElementById("newentryform").reset();
+		document.getElementById('sval').innerHTML = "5";
+		//update startpage
+		refreshStartPage();
+	};
+}
+
+//############################################################
+//delete one item
+//- itemPK		prim. key for item [id]
+//- itemTime	time of item HH:MM [string]
+function deleteItem(itemPK,itemTime) {
+	if (confirm(itemTime + " - " + msg05)) {
+		var transaction = db.transaction(["tlogData"], "readwrite");
+		var tlogData = transaction.objectStore("tlogData");
+	 	var requestDel = tlogData.delete(itemPK);
+		requestDel.onerror = function(err) {
+			//console.log("Error Delete: " + err.target.error.name);
+			alert(msg11);
+		};
+		requestDel.onsuccess = function(event) {
+			//console.log("Delete OK");
+			//update startpage
+			refreshStartPage();
+		};
+	}
+}
+
+//############################################################
+//delete all items for a day
+//- daystr		day from db YYYY:MM:DD-WD [string]
+function deleteDay(daystr) {
+	if (confirm(msg06 + "\n" + daystr)) {
+		var transaction = db.transaction(["tlogData"], "readwrite");
+		var tlogData = transaction.objectStore("tlogData");
+		tlogData.openCursor().onsuccess = function(event) {
+			var cursor = event.target.result;
+			if (cursor) {
+				if (daystr === decryptData(cursor.value.date,cryptoPW)) {
+				 	var requestDel = tlogData.delete(cursor.primaryKey);
+					requestDel.onerror = function(err) {
+						//console.log("Error Delete: " + err.target.error.name);
+					};
+					requestDel.onsuccess = function(event) {
+						//console.log("Delete OK");
+					};
+				}
+				cursor.continue();
+			} else {
+				//update startpage
+				refreshStartPage();
+			}
+		};
+	}
+}
+
+//############################################################
+//clear all entries in database objectstore
+function deleteAll() {
+	if (confirm(msg07)) {
+		var transaction = db.transaction(["tlogData"], "readwrite");
+		var tlogData = transaction.objectStore("tlogData");
+		var requestClear = tlogData.clear();
+		requestClear.onerror = function(err) {
+			//console.log("Error Clear: " + err.target.error.name);
+		};
+		requestClear.onsuccess = function(event) {
+			//console.log("Clear OK");
+			refreshStartPage();
+			location.hash = "#appstart";
+		};
+		//also clear the localstorage to delete pw
+		if (localStorage != null) {
+			localStorage.clear();
+			//hide buttons: logout, change pw, show button: set a pw
+			document.getElementById("logoutbutton").style.display = "none";
+			document.getElementById("changepwbutton").style.display = "none";
+			document.getElementById("setpwbutton").style.display = "block";
+		}
+	}
+}
+
+//############################################################
+//show report with all entries in csv format
+//1,2020-03-13,11:11,5,comment
+function updateCSVReport() {
+	var csvArray = new Array();
+	document.getElementById("csvreport").innerHTML = "";
+	//read all items from indexDB
+	var transaction = db.transaction(["tlogData"], "readonly");
+	var tlogData = transaction.objectStore("tlogData");
+	tlogData.openCursor().onsuccess = function(event) {
+		var cursor = event.target.result;
+		if (cursor) {
+			//build array with csv strings
+			csvArray.push(decryptData(cursor.value.date,cryptoPW).substring(0,10) + "," +  decryptData(cursor.value.time,cryptoPW) + "," + decryptData(cursor.value.duration,cryptoPW) + ",\"" + decryptData(cursor.value.comment,cryptoPW) + "\"<br />");
+			cursor.continue();
+		} else {
+			var csvStr = "SimpleTracer " + appVersion + ", Einträge: " + csvArray.length + "<br />Nr,Datum,Uhrzeit,Dauer[min],Kontaktinfo<br />";
+			//show array content as csv
+			csvArray.sort();
+			for (var i = 0; i < csvArray.length; i++) {
+				csvStr = csvStr + (i+1)+ "," + csvArray[i];
+			}
+			if (csvArray.length === 0) {csvStr = "";}
+			document.getElementById("csvreport").innerHTML = csvStr;
+		}
+	};
+}
+
+//############################################################
+//load all items from indexedDB and show on start page
+function refreshStartPage() {
+	//basic arrays and values
+	var rowArray = new Array();
+	var dayArray = new Array();
+	//read all items from indexDB
+	var transaction = db.transaction(["tlogData"], "readonly");
+	var tlogData = transaction.objectStore("tlogData");
+	tlogData.openCursor().onsuccess = function(event) {
+		var cursor = event.target.result;
+		if (cursor) {
+			//build arrays with rows for all items and for all dates
+			rowArray.push("<!--"+decryptData(cursor.value.date,cryptoPW)+"-"+decryptData(cursor.value.time,cryptoPW)+"--><tr class=\"bg_"+decryptData(cursor.value.duration,cryptoPW)+"\"><td>"+decryptData(cursor.value.time,cryptoPW)+"</td><td>Dauer ca. "+decryptData(cursor.value.duration,cryptoPW)+" Min.</td><td class=\"mright\" rowspan=\"2\"><button type=\"button\" onclick=\"deleteItem("+cursor.primaryKey+",'"+decryptData(cursor.value.time,cryptoPW)+"');\">×</button></td></tr><tr class=\"bg_"+decryptData(cursor.value.duration,cryptoPW)+"\"><td class=\"comment\" colspan=\"2\"><strong>Kontakt: </strong>"+decryptData(cursor.value.comment,cryptoPW)+"</td></tr>\n");
+			//only add new day if not already exists
+			if (dayArray.toString().indexOf(decryptData(cursor.value.date,cryptoPW)) === -1) {dayArray.push(decryptData(cursor.value.date,cryptoPW));}
+			cursor.continue();
+		} else {
+			//console.log('Entries all handled.');
+			//build table blocks for each day
+			dayArray.sort();
+			rowArray.sort();
+			var allItemStr = "";
+			for (var i = 0; i < dayArray.length; i++) {
+				//table header with day info
+				var dayHeadStr = "<table><thead><tr><th style=\"padding-left:15px;\" class=\"mleft\" colspan=\"2\" onclick=\"openCloseDay('dayID_"+dayArray[i]+"');\"><span id=\"arrdayID_"+dayArray[i]+"\">&#9660;</span>&nbsp;&nbsp;&nbsp;&nbsp;"+dayArray[i]+"</th><th class=\"mright\"><button type=\"button\"  onclick=\"deleteDay('"+dayArray[i]+"');\">×</button></th></tr></thead>\n";
+				var dayBodyStr = "<tbody id=\"dayID_"+dayArray[i]+"\">";
+				var dayContactSum = 0;
+				//get all items for this day and create rows
+				for (var i2 = 0; i2 < rowArray.length; i2++) {
+					if (rowArray[i2].indexOf(dayArray[i]) !== -1) {
+						dayBodyStr = dayBodyStr + rowArray[i2];
+						dayContactSum++;
+					}
+				}
+				//build complete string for day
+				var dayFootStr = "<tfoot><tr><td style=\"border-bottom-left-radius:10px;\" colspan=\"2\"><div style=\"padding-left:35px\">Kontakte an diesem Tag: " + dayContactSum + "</div></td><td style=\"font-size:28px; border-bottom-right-radius: 10px;\">&nbsp;</td></tr></tfoot>";
+				allItemStr = allItemStr +  dayHeadStr +  dayBodyStr + "</tbody>" + dayFootStr + "</table>";
+			}
+			//show start msg for no entries
+			if (dayArray.length === 0) {allItemStr = msg03 + msg04;}
+			//update info on start, status and report page
+			curNofItems = rowArray.length;
+			document.getElementById("remainitems").innerHTML = maxNofItems - curNofItems;
+			document.getElementById("tlogitems").innerHTML = allItemStr;
+			document.getElementById("scurrent").innerHTML = curNofItems;
+			document.getElementById("smax").innerHTML = maxNofItems;
+			updateCSVReport();
+		}
+	};
+}
+
+//##########################################################
+//open and close rows in day table
+//- dayID		id of tbody to show/hide [ID]
+function openCloseDay(dayID) {
+	var dayBody  = document.getElementById(dayID);
+	var dayArrow = document.getElementById("arr"+dayID);
+	if ((dayBody.style.display === "none") || (dayBody.style.display === "")) {
+		dayBody.style.display = "table-row-group";
+		dayArrow.innerHTML = "&#9650;";
+	} else {
+		dayBody.style.display = "none";
+		dayArrow.innerHTML = "&#9660;";
+	}
+}
+
+//############################################################
+//turn date object in readable date format
+//return value: visual date string 2015-12-06 - Sonntag [string]
+//- dateobj		date Obj from input form [Obj]
+function makeVisualDate(dateobj) {
+	//define separators
+	var sepa1 = "-";
+	var sepa2 = "-";
+	//get year and day from date object
+	var mikYear  = dateobj.getFullYear();
+	var mikMonth = dateobj.getMonth() + 1; //starts with 0
+	var mikDay   = dateobj.getDate();
+	//get day names from global array weekDay
+	var mikWeekDay   = weekDay[dateobj.getDay()];
+	//always show two digit values for month and day
+	if (parseInt(mikMonth) < 10) {sepa1 = "-0";} else {sepa1 = "-";};
+	if (parseInt(mikDay) < 10)   {sepa2 = "-0";} else {sepa2 = "-";};
+	//build visual date str: 2015.12.06 - So
+	var mikDateVisual = mikYear + sepa1 + mikMonth + sepa2 + mikDay + " - " +  mikWeekDay;
+	return mikDateVisual;
+}
+
+//############################################################
+//turn date object in readable time format
+//return value: visual time string 11:23 [string]
+//- dateobj		date Obj from input form [Obj]
+function makeVisualTime(dateobj) {
+	//define separator
+	var sepa1 = "";
+	var sepa2 = ":";
+	//get time (hours and mins) from date object
+	var mikHours = dateobj.getHours();
+	var mikMins = dateobj.getMinutes();
+	//set different time for ios regarding time zone
+	if ((navigator.userAgent.toLowerCase().indexOf("iphone") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipod") !== -1)) {
+		mikHours = mikHours+((dateobj.getTimezoneOffset())/60);
+ 	}
+	//always show two digit values for hours and mins and day
+	if (parseInt(mikHours) < 10) {sepa1 = "0";} else {sepa1 = "";};
+	if (parseInt(mikMins) < 10)   {sepa2 = ":0";} else {sepa2 = ":";};
+	//build visual time str:  11:23
+	var mikTimeVisual = sepa1 + mikHours + sepa2 + mikMins;
+	return mikTimeVisual;
+}
+
+//##########################################################
+//add new item
+function addNewItem() {
+	//get form entries
+	var newComment  = document.getElementById("tlogcomment").value;
+	var newDuration = document.getElementById("tlogduration").value;
+	var newDateTime = document.getElementById("tlogdatetime").value;
+	//check for no info and not allowed chars
+	if (newComment === "") {
+		alert(msg13);
+		document.getElementById("tlogcomment").focus();
+	} else {
+		if (reCheck.test(newComment))  {
+			alert(msg12);
+			document.getElementById("tlogcomment").focus();
+		} else {
+			//check for max nof items
+			if (curNofItems === maxNofItems) {
+				alert(msg01);
+			} else {
+				//check for valid date (date-time-local not ff support)  note:attribut required does not work with IOS on datetime-local
+				var dateObj = new Date(newDateTime);
+				if ((dateObj === "") || (dateObj === undefined) || (dateObj === "Invalid Date") || (newDateTime === "")) {
+					alert(msg02);
+					document.getElementById("tlogdatetime").focus();
+				} else {
+					//split date and time
+					var newDate = makeVisualDate(dateObj);
+					var newTime = makeVisualTime(dateObj);
+					if (newDuration === "0") {newDuration = "1";}
+					//build json obj  {"date":"YYYY:MM:DD-WD", "time":"HH:MM", "comment":"this is a comment", "duration":"5"}
+					var newtlogItem = {};
+						newtlogItem.date     = encryptData(newDate,cryptoPW);
+						newtlogItem.time     = encryptData(newTime,cryptoPW);
+						newtlogItem.comment  = encryptData(newComment,cryptoPW);
+			   	   		newtlogItem.duration = encryptData(newDuration,cryptoPW);
+					//update indexedDB with new item
+					addToIndexedDB(newtlogItem);
+				}
+			}
+		}
+	}
+}
+
+
+//##########################################################
+// data encryption handling
+//##########################################################
+
+//##########################################################
+// AES encrypt data
+//- eData:	data to encrypt [string]
+//- ePW:	password to encrypt [string]
+//returnvalue: aes encryted data [string]
+function encryptData(eData,ePW) {
+	var cipherStr = CryptoJS.AES.encrypt(eData,ePW).toString();
+	return cipherStr;
+}
+
+//##########################################################
+// AES decrypt data
+//- dData:	data to decrypt [string]
+//- dPW:	password to decrypt [string]
+//returnvalue: aes decryted data [string]
+function decryptData(dData,dPW) {
+	var bytes  = CryptoJS.AES.decrypt(dData,dPW);
+	var clearStr = bytes.toString(CryptoJS.enc.Utf8);
+	return clearStr;
+}
+
+//##########################################################
+// AES reencrypt data after new pw or pw change
+//- oldPW:	old password for decrypton [string]
+//- newPW:	new password for encrypton [string]
+//- typePW: 'new'=new pw set, 'change'=existing pw changed, 'remove'=existing pw removed  [string]
+function reencryptData(oldPW,newPW,typePW) {
+	//update all data in indexedDB
+	var transaction = db.transaction(["tlogData"], "readwrite");
+	var tlogData = transaction.objectStore("tlogData");
+	tlogData.openCursor().onsuccess = function(event) {
+		var cursor = event.target.result;
+		if (cursor) {
+			//decrypt data with old PW
+			var clearDate = decryptData(cursor.value.date,oldPW);
+			var clearTime = decryptData(cursor.value.time,oldPW);
+			var clearDura = decryptData(cursor.value.duration,oldPW);
+			var clearComm = decryptData(cursor.value.comment,oldPW);
+			//encrypt data with new pw and update DB
+			var updateData = cursor.value;
+			updateData.date = encryptData(clearDate,newPW);
+			updateData.time = encryptData(clearTime,newPW);
+			updateData.duration = encryptData(clearDura,newPW);
+			updateData.comment = encryptData(clearComm,newPW);
+			cursor.update(updateData);
+			cursor.continue();
+		} else {
+			//action depending on change type
+			if (typePW === "new") {
+				//new pw initially set: force reload to show login page
+				document.location.reload();
+			} else if (typePW === "change") {
+				//existing pw changed: show info page
+				location.hash = "#info";
+			} else if (typePW === "remove") {
+				//pw protection removed: set default pw
+                cryptoPW = defaultPW;
+				alert(msgP07);
+				document.location.href = "index.htm";
+			} else {
+				alert("Encryption Error - No type specified!")
+			}
+		}
+	};
+}
+
+
+//##########################################################
+// password handling
+//##########################################################
+
+//##########################################################
+//check pw entry, save pw and close popup after saving
+//- pwID2:	id of 1. pw field [ID]
+//- pwID2:	id of 2. pw field [ID]
+//- pwform:	form ID containing pw fields [ID]
+function setPassword(pwID1,pwID2,pwform) {
+	var pw1 = document.getElementById(pwID1);
+	var pw2 = document.getElementById(pwID2);
+	if ((pw1.value === "") || (pw1.value.length < pwMin) || (pw1.value.length > pwMax) || (!(reCheckPW.test(pw1.value)))) {
+		alert(msgP02);
+		pw1.focus();
+	} else {
+		if (pw1.value !== pw2.value) {
+			alert(msgP03);
+			pw2.focus();
+		} else {
+			//save new/changed pw with localstorage (note: expecting localStorage.setItem used in savePassword NOT to be async!)
+			if (savePassword(pw1.value)) {
+				//reset all pw forms, hide all modal popup, show info page
+				showHideModal(false,"pwinit");
+				showHideModal(false,"pwchange");
+				showHideModal(false,"pwlogin");
+				//reencrypt data with new or changed pw
+				if (pwform === "newpwform") {
+					reencryptData(cryptoPW,pw1.value,"new");
+				} else if (pwform === "changepwform") {
+					reencryptData(cryptoPW,pw1.value,"change");
+				}
+			}
+		}
+	}
+}
+
+//##########################################################
+//change old pw to new pw
+//- pwID2:	id of 1. pw field [ID]
+//- pwID2:	id of 2. pw field [ID]
+//- pwform:	form ID containing pw fields [ID]
+function changePassword(pwID1,pwID2,pwform) {
+	//check for pw rules first (do not forward spec.chars to CryptoJS)
+	var oldPW = document.getElementById("oldpw");
+	if ((oldPW.value === "") || (oldPW.value.length < pwMin) || (oldPW.value.length > pwMax) || (!(reCheckPW.test(oldPW.value)))) {
+		alert(msgP05);
+		oldPW.focus();
+	} else {
+		//check for matching old pw
+		var oldPWhash = CryptoJS.SHA256(oldPW.value);
+		if (oldPWhash.toString() === currentPWHash.toString()) {
+			//check new passwords
+			setPassword(pwID1,pwID2,pwform);
+		} else {
+			alert(msgP05);
+			oldPW.focus();
+		}
+	}
+}
+
+//##########################################################
+//check login pw
+function checkPassword() {
+	//check for pw rules first (do not forward spec.chars to CryptoJS)
+	var loginPW = document.getElementById("loginpw");
+	if ((loginpw.value === "") || (loginpw.value.length < pwMin) || (loginpw.value.length > pwMax) || (!(reCheckPW.test(loginpw.value)))) {
+		alert(msgP05);
+		loginPW.focus();
+	} else {
+		//check for matching pw
+		var loginPWhash = CryptoJS.SHA256(loginPW.value);
+		if (loginPWhash.toString() === currentPWHash.toString()) {
+			//login successfull - hide login screen
+			showHideModal(false,"pwlogin");
+			//set curent pw
+			cryptoPW = loginpw.value;
+			//create indexedDB and update startpage
+			createIndexedDB();
+		} else {
+			alert(msgP05);
+			loginPW.focus();
+		}
+	}
+}
+
+//##########################################################
+//remove password
+function removePassword() {
+	//check for pw rules first (do not forward spec.chars to CryptoJS)
+	var oldPW = document.getElementById("oldpw");
+	if ((oldPW.value === "") || (oldPW.value.length < pwMin) || (oldPW.value.length > pwMax) || (!(reCheckPW.test(oldPW.value)))) {
+		alert(msgP05);
+		oldPW.focus();
+	} else {
+		//check for matching old pw
+		var oldPWhash = CryptoJS.SHA256(oldPW.value);
+		if (oldPWhash.toString() === currentPWHash.toString()) {
+			if (confirm(msgP06)) {
+				//clear the localstorage to delete pw
+				if (localStorage != null) {
+					localStorage.clear();
+				}
+				//reencryt data with default pw
+				reencryptData(cryptoPW,defaultPW,"remove");
+			}
+		} else {
+			alert(msgP05);
+			oldPW.focus();
+		}
+	}
+}
+
+//##########################################################
+//show or hide modal page
+//- showmodal:	true=show, false=hide [boolean]
+//- modalID:	ID of modal window [ID]
+function showHideModal(showmodal,modalID) {
+	if (showmodal) {
+		document.getElementById(modalID).style.display = "block";
+	} else {
+		document.getElementById(modalID).style.display = "none";
+		//reset all pw form by default
+		var pwForms = document.querySelectorAll("form.pwform");
+		for (var i = 0; i < pwForms.length; i++) {
+			pwForms[i].reset();
+		}
+	}
+}
+
+//##########################################################
+//hash password and save as localstorage
+//returnvalue: true/false for successfull saving
+//- savepw:	pw for saving [string]
+function savePassword(savepw) {
+	//check for working localStorage
+	if (localStorage == null) {
+		alert(msgP04);
+		return false;
+	} else {
+		//save hashed pw with date
+		var dateSaved = new Date();
+		localStorage.setItem("datePW",dateSaved.toLocaleString());
+		localStorage.setItem("accessPW",CryptoJS.SHA256(savepw));
+		document.getElementById("pwdate").innerHTML = dateSaved.toLocaleString();  //set last pw change
+		alert(msgP01);
+		return true;
+	}
+}
+
+//##########################################################
+//check for saved pw: load pw and hide popup
+//returnvalue: true/false for successfull loading pw and date
+function loadPassword() {
+	//check for working localStorage
+	if (localStorage == null) {
+		alert(msgP04);
+	} else {
+		//check for saved pw
+		if ((localStorage.getItem("accessPW") != null) && (localStorage.getItem("accessPW") !== "")) {
+			currentPWHash = localStorage.getItem("accessPW");
+			currentPWDate = localStorage.getItem("datePW");
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+</script>
+</head>
+<body onload="initApp()">
+<noscript><h1 style="text-align:center">Please activate Javascript<br/>to run this web app!</h1></noscript>
+<!-- ###################### START PAGE ##############################  -->
+<div class="page" id="appstart">
+	<div class="header">
+		<h1>Simple Tracer</h1>
+		<a class="button2" href="#newentry">Neuer Eintrag</a>
+		<a class="button1" href="#info">Info</a>
+	</div>
+	<div class="content">
+		<p style="text-align:center; font-size:16px; padding:10px">Verbleibende Einträge: <strong id="remainitems"></strong></p>
+		<div id="tlogitems">
+		</div>
+		<p style="text-align:center; font-size:16px; padding:10px">Bitte <strong><a style="color:#990000" href="#info">Wichtige Hinweise</a></strong> beachten!</p>
+		<p class="footer">Simple Tracer <span class="fversion"></span></p>
+	</div>
+</div>
+
+<!-- ###################### ENTRY PAGE ##############################  -->
+<div class="page" id="newentry">
+	<div class="header">
+		<h1>Neuer Eintrag</h1>
+		<a class="button1" href="#appstart">Abbrechen</a>
+	</div>
+	<div class="content">
+		<form id="newentryform" name="newentryform" action="javascript:void(0)" onsubmit="addNewItem()">
+			<label class="lhead" for="tlogduration" style="margin-top:5px">Kontaktdauer ca. <span id="sval" style="color:#333333;">5</span> Min.</label>
+			<table>
+				<tr><td colspan="2" style="text-align:left; padding-bottom:10px">0-1 Min.</td><td colspan="4" style="text-align:right; padding-bottom:10px">25 Min. oder  länger</td></tr>
+				<tr><td class="bg_1">1</td><td class="bg_5">5</td><td class="bg_10">10</td><td class="bg_15">15</td><td class="bg_20">20</td><td class="bg_25">25</td></tr>
+			</table>
+			<input type="range" name="tlogduration" id="tlogduration" min="0" max="25" step="5"  value="5" onchange="var dur=this.value; if (dur==='0') {dur='1'}; document.getElementById('sval').innerHTML=dur" />
+			<label class="lhead" for="tlogdatetime">Datum / Uhrzeit wählen</label>
+			<p style="padding:0px;font-size:12px; white-space:nowrap">Einfach ins Feld tippen</p>
+			<input type="datetime-local" name="tlogdatetime" id="tlogdatetime" value="" />
+			<label class="lhead" for="tlogcomment">Kontaktinfo einfügen</label>
+			<p style="padding:0px;font-size:12px; white-space:nowrap">Maximal 120 Zeichen</p>
+			<input type="text" name="tlogcomment" id="tlogcomment" maxlength="120" value="" placeholder="Name, Ort etc." />
+			<button class="blarge" type="button" onclick="addNewItem()">Eintrag speichern</button>
+		</form>
+		<p class="footer">Simple Tracer <span class="fversion"></span></p>
+	</div>
+</div>
+
+<!-- ###################### SHARE PAGE ##############################  -->
+<div class="page" id="shareentry">
+	<div class="header">
+		<h1>CSV Report</h1>
+		<a class="button1" href="#info">Zurück</a>
+	</div>
+	<div class="content" style="text-align:center">
+		<form id="shareentryform" name="shareentryform" action="javascript:void(0)">
+			<p style="padding:10px 0px 10px 0px;font-size:16px;">Das untere Feld enthält alle Einträge im <a href="https://de.wikipedia.org/wiki/CSV_(Dateiformat)" target="_blank" rel="noopener">CSV Format</a>. Zum Teilen oder Kopieren der Einträge einfach ins Feld tippen und halten.</p>
+	 		<pre id="csvreport" style="text-align:left; overflow:auto;-webkit-user-select: all;-khtml-user-select: all;-moz-user-select: all;-ms-user-select: all;-o-user-select: all;user-select: all;"></pre>
+			<p style="font-size:16px;"><strong style="color:#990000;">Wichtiger Hinweis:</strong><br />Personenbezogene Daten sollten nur verschlüsselt geteilt werden!</p>
+			<br />
+		</form>
+	</div>
+</div>
+
+<!-- ###################### ABOUT PAGE ##############################  -->
+<div class="page" id="info">
+	<div class="header">
+		<h1>Simple Tracer</h1>
+		<a class="button2" href="javascript:void(0);" onclick="document.location.href='index.htm';" style="margin-right:22px" id="logoutbutton">Abmelden</a>
+		<a class="button1" href="#appstart">Zurück</a>
+	</div>
+	<div class="content">
+		<br />
+		<p><strong>Simple Tracer</strong> dient zur mobilen Erstellung eines einfachen Kontakt-Tagebuchs.
+		Die Kontakte können einfach mit Datum/Uhrzeit und ungefährer Dauer eingetragen werden. Die Daten werden lokal gespeichert (<a href="https://de.wikipedia.org/wiki/Indexed_Database_API" target="_blank" rel="noopener">IndexedDB</a>).</p>
+		<hr />
+		<button style="padding:5px" class="blarge" type="button" onclick="showHideModal(true,'pwchange')" id="changepwbutton">Passwort ändern</button>
+		<button style="padding:5px" class="blarge" type="button" onclick="showHideModal(true,'pwinit')" id="setpwbutton">Passwort vergeben</button>
+		<button style="padding:5px" class="blarge" type="button" onclick="location.hash='#shareentry'">Report mit allen Daten</button>
+		<button style="padding:5px" class="blarge" type="button" onclick="deleteAll()">Alle Daten löschen</button>
+		<hr />
+		<p><strong style="color:#990000">Wichtige Hinweise:</strong><br />Browserfunktionen wie Browserdaten löschen, Websitedaten löschen, Private Daten löschen, können Ihre gespeicherten Einträge löschen.</p>
+		<p>Das Speichern der Einträge funktioniert nicht im Privaten Modus. Nach Schließen der Webapp sind hier die gespeicherten Einträge verloren.</p>
+		<hr />
+		<p>Keine Gewähr für Sicherheit und Richtigkeit der bereitgestellten Informationen! Benutzung auf eigene Gefahr.
+		Weitere Details unter <a href="https://www.cjpj.de/contact.htm#termsde" target="_blank" rel="noopener">Nutzungsbedingungen (Lizenz)</a>.</p>
+		<hr />
+		<h2>Status</h2>
+		<ul>
+			<li>Netzwerk: <strong id="snet">-</strong></li>
+			<li>Im Cache: <strong id="scache">-</strong></li>
+			<li>Update: <strong id="supdate">kein Update verfügbar</strong></li>
+			<li>aktuelle Einträge: <strong id="scurrent"></strong></li>
+			<li>maximale Einträge: <strong id="smax"></strong></li>
+		</ul>
+		<hr />
+		<h2>Info</h2>
+		<ul>
+			<li>App Titel: <strong>Simple Tracer</strong></li>
+			<li>Version: <strong id="version">-</strong></li>
+			<li>Release Date: <strong id="release">-</strong></li>
+		</ul>
+		<hr />
+		<h2>Impressum</h2>
+		<ul>
+			<li>Autor: </li>
+			<li>Straße: </li>
+			<li>Stadt:</li>
+			<li>Land:</li>
+			<li>Tel: </li>
+			<li>Email: </li>
+			<li>Website:</li>
+		</ul>
+		<hr />
+		<h2>Open Source Lizenzen</h2>
+		<ul>
+			<li><a href="https://github.com/brix/crypto-js" target="_blank" rel="noopener">crypto-js</a> unter <a href="https://github.com/brix/crypto-js/blob/develop/LICENSE" target="_blank" rel="noopener">The MIT License</a></li>
+			<li><a href="https://github.com/cjpjwa/simple-app-shell" target="_blank" rel="noopener">Simple App Shell</a> unter <a href="https://github.com/cjpjwa/simple-app-shell/blob/master/LICENSE" target="_blank" rel="noopener">The MIT License</a></li>
+		</ul>
+		<br />
+	</div>
+</div>
+
+<!-- ###################### MODAL CHANGE PW PAGE ##############################  -->
+<div id="pwchange">
+	<form class="pwform" id="changepwform" name="changepwform" action="javascript:void(0)" onsubmit="changePassword('newpw1','newpw2','changepwform')">
+		<h2>Passwort ändern</h2>
+		<p>Letzte Änderung:  <span id="pwdate"></span></p>
+		<br />
+		<label for="oldpw" style="white-space:nowrap; font-weight:bold">Altes Passwort eingeben</label>
+		<input type="password" name="oldpw" id="oldpw" value="" placeholder="Ihr altes Passwort" maxlength="20" autocomplete="off" /><br />
+		<hr />
+		<label for="newpw1" style="white-space:nowrap; font-weight:bold">Neues Passwort eingeben</label>
+		<input type="password" name="newpw1" id="newpw1" value="" placeholder="Ihr neues Passwort" maxlength="20" autocomplete="off" /><br />
+		<label for="newpw2" style="white-space:nowrap; font-weight:bold">Neues Passwort wiederholen</label>
+		<input type="password" name="newpw2" id="newpw2" value="" placeholder="Ihr neues Passwort" maxlength="20" autocomplete="off" /><br />
+		<button type="button" onclick="changePassword('newpw1','newpw2','changepwform')">Passwort ändern</button>
+		<button type="button" onclick="removePassword()" style="margin-top:5px">Passwortschutz entfernen</button>
+		<button type="button" onclick="showHideModal(false,'pwchange')" class="blite">Abbrechen</button>
+		<hr />
+		<p>Vorgabe: Zwischen 4 und 20 Zeichen,<br />nur Buchstaben und Zahlen.</p>
+		<hr />
+		<p class="footer">Simple Tracer <span class="fversion"></span></p>
+		<br />
+	</form>
+</div>
+
+<!-- ###################### MODAL SET NEW PW PAGE ##############################  -->
+<div id="pwinit">
+	<form class="pwform" id="newpwform" name="newpwform" action="javascript:void(0)" onsubmit="setPassword('password1','password2','newpwform')">
+		<h2>Passwort vergeben</h2>
+		<p>Passwort vergeben, um Web App gegen Fremdzugriff zu schützen.</p>
+		<hr />
+		<label for="password1" style="white-space:nowrap; font-weight:bold">Passwort eingeben</label>
+		<input type="password" name="password1" id="password1" value="" placeholder="Ihr Passwort" maxlength="20" autocomplete="off" /><br />
+		<label for="password2" style="white-space:nowrap; font-weight:bold">Passwort wiederholen</label>
+		<input type="password" name="password2" id="password2" value="" placeholder="Ihr Passwort" maxlength="20" autocomplete="off" /><br />
+		<button type="button" onclick="setPassword('password1','password2','newpwform')">Passwort speichern</button>
+		<button type="button" onclick="showHideModal(false,'pwinit')" class="blite">Abbrechen</button>
+		<hr />
+		<p>Vorgabe: Zwischen 4 und 20 Zeichen,<br />nur Buchstaben und Zahlen.</p>
+		<p>Passwort sicher verwahren.<br />Bei Verlust ist kein Zugriff mehr möglich!</p>
+		<hr />
+		<p class="footer">Simple Tracer <span class="fversion"></span></p>
+	</form>
+</div>
+
+<!-- ###################### MODAL LOGIN PW PAGE ##############################  -->
+<div id="pwlogin">
+	<form class="pwform" id="loginpwform" name="loginpwform" action="javascript:void(0)" onsubmit="checkPassword()">
+		<br />
+		<br />
+		<label for="loginpw" style="white-space:nowrap; font-weight:bold; font-size:20px">Bitte anmelden</label>
+		<br />
+		<input type="password" name="loginpw" id="loginpw" value="" placeholder="Passwort eingeben" maxlength="20" style="font-size:20px; padding:10px" autocomplete="off" /><br />
+		<br />
+		<button class="blarge" type="button" onclick="checkPassword()" style="font-size:24px; padding:10px; width:80%">Anmelden</button>
+		<br />
+		<br />
+		<p class="footer">Simple Tracer <span class="fversion"></span></p>
+		<br />
+	</form>
+</div>
+</body>
+</html>
