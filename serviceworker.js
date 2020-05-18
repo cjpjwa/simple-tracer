@@ -3,7 +3,7 @@
 // Version: 17.05.2020 10:45
 //########################################
 
-var cacheName = 'schmerzlog_20_05_17_10_45';
+var cacheName = 'simpletracer_20_05_17_10_45';
 var urlsToCache = [
 	'/',
 	'/index.htm',
