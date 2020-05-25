@@ -135,6 +135,7 @@ p.footer a			{color:#333333}
 //##########################################################
 // Date			Version			Description
 // 17.05.2020	0.1alpha 		initial test version
+// 25.05.2020	0.2alpha 		added novalidate attribute to entry form
 //##########################################################
 // based on: https://www.cjpj.de/appshell.htm
 // Simple App Shell, (c) 2020 webapps@cjpj, P. Janko
@@ -150,8 +151,8 @@ p.footer a			{color:#333333}
 
 //##########################################################
 //basic global vars
-var appVersion = "0.1alpha Test";
-var appRelease = "17.05.2020";
+var appVersion = "0.2alpha Test";
+var appRelease = "25.05.2020";
 //global array with all pages
 var appPages = new Array();
 var maxNofItems = 500; 			//set max number of items
@@ -914,7 +915,7 @@ function loadPassword() {
 		<a class="button1" href="#appstart">Abbrechen</a>
 	</div>
 	<div class="content">
-		<form id="newentryform" name="newentryform" action="javascript:void(0)" onsubmit="addNewItem()">
+		<form id="newentryform" name="newentryform" action="javascript:void(0)" onsubmit="addNewItem()" novalidate="novalidate">
 			<label class="lhead" for="tlogduration" style="margin-top:5px">Kontaktdauer ca. <span id="sval" style="color:#333333;">5</span> Min.</label>
 			<table>
 				<tr><td colspan="2" style="text-align:left; padding-bottom:10px">0-1 Min.</td><td colspan="4" style="text-align:right; padding-bottom:10px">25 Min. oder  länger</td></tr>
