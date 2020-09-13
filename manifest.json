@@ -24,6 +24,15 @@
 			"purpose": "any maskable"
 		}
 	],
+	"shortcuts": [
+		{
+			"name": "Neuer Eintrag",
+			"short_name": "Neuer Eintrag",
+			"description": "Neuen Eintrag hinzufügen",
+			"url": "/index.htm#newentry",
+			"icons": [{ "src": "icon_192_new.png", "sizes": "192x192" }]
+		}
+	],
 	"start_url": "index.htm",
 	"display": "standalone",
 	"background_color": "#CCCCCC",

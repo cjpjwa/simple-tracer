@@ -1,9 +1,9 @@
 //########################################
 // serviceworker for simple tracer
-// Version: 10.08.2020 11:30
+// Version: 13.09.2020 11:30
 //########################################
 
-var cacheName = 'simpletracer_20_08_10_11_30';
+var cacheName = 'simpletracer_20_09_13_11_30';
 var urlsToCache = [
 	'/',
 	'/index.htm',
@@ -14,6 +14,7 @@ var urlsToCache = [
 	'/icon_192.png',
 	'/icon_512.png',
 	'/icon_maskable.png',
+	'/icon_192_new.png',	
 	'/manifest.json'
 ];
 
