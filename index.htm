@@ -81,7 +81,8 @@ body				{padding:0px; margin:0px; background:#cccccc; color:#333333; font-family
 .content #newentryform #tlogduration::-moz-range-thumb 		{width:25px; height:25px; background: #333333; border:1px solid #eeeeee; border-radius:5px; cursor: pointer;}
 
 .content #newentryform #tlogcomment::placeholder {font-weight:normal; color: #cccccc; opacity: 1;}
-.content #newentryform #tlogcomment		{padding:7px 0px 7px 10px; margin:5px 0px 15px 0px; color:#333333; width:86%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:bold; font-size:20px;}
+.content #newentryform #tlogcomment		{padding:7px 0px 7px 10px; margin:5px 0px 15px 0px; color:#333333; width:70%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:bold; font-size:20px;}
+.content #newentryform #tlogmask		{padding:0px; margin:0px; font-size:32px; border:none; background:none; width:15%}
 .content #newentryform #tlogdatetime	{padding:5px 0px 5px 10px; margin:5px 0px 10px 0px; color:#333333; width:86%; background:#ffffff; border:1px solid #333333; border-radius:5px; font-weight:bold; font-size:20px;}
 
 .content button 					{color:#eeeeee; text-align:center; padding:15px 10px 15px 10px; margin:0px; background:#333333; border:1px solid #eeeeee; cursor:pointer; border-radius:5px; font-size:16px; font-weight: normal;}
@@ -122,7 +123,8 @@ p.footer a			{color:#333333}
 .content button.blarge 					{width:770px;}
 .content #newentryform table			{width:758px;}
 .content #newentryform #tlogduration	{width:758px;}
-.content #newentryform #tlogcomment		{width:758px;}
+.content #newentryform #tlogcomment		{width:700px;}
+.content #newentryform #tlogmask        {width:58px;}
 .content #newentryform #tlogdatetime	{width:758px;}
 .pwform									{width:800px; margin:0px auto;}
 }
@@ -138,6 +140,7 @@ p.footer a			{color:#333333}
 // 25.05.2020	0.2alpha 		added novalidate attribute to entry form
 // 10.08.2020	0.3alpha 		added maskable icon
 // 13.09.2020	0.4alpha 		add app shortcut for New Entry
+// 19.11.2020	0.5alpha 		add button "with mask"
 //##########################################################
 // based on: https://www.cjpj.de/appshell.htm
 // Simple App Shell, (c) 2020 webapps@cjpj, P. Janko
@@ -153,8 +156,8 @@ p.footer a			{color:#333333}
 
 //##########################################################
 //basic global vars
-var appVersion = "0.4alpha Test";
-var appRelease = "13.09.2020";
+var appVersion = "0.5alpha Test";
+var appRelease = "19.11.2020";
 //global array with all pages
 var appPages = new Array();
 var maxNofItems = 500; 			//set max number of items
@@ -192,6 +195,7 @@ var msg10 = "Speichern fehlgeschlagen!\nBitte erneut versuchen!";
 var msg11 = "Löschen fehlgeschlagen!\nBitte erneut versuchen!";
 var msg12 = "Folgende Zeichen dürfen nicht verwendet werden:\n\n > < ; & \\ \" ";
 var msg13 = "Bitte Kontaktinfo eingeben (z.B. Name, Ort)!";
+var msg14 = " (mit Maske)";
 //password messages
 var msgP01 = "Passwort erfolgreich gespeichert!";
 var msgP02 = "Ungültiges Passwort!\nBitte gültiges Passwort eingeben!\nZwischen 4 und 20 Zeichen,\nnur Buchstaben und Zahlen\nkeine Sonderzeichen, keine Umlaute";
@@ -650,6 +654,13 @@ function addNewItem() {
 	}
 }
 
+//##########################################################
+//add info text to entry text
+function addInfoText() {
+	var commentAdd = document.getElementById("tlogcomment").value + msg14;
+	document.getElementById("tlogcomment").value = commentAdd;
+	document.getElementById("tlogcomment").focus();
+}
 
 //##########################################################
 // data encryption handling
@@ -930,6 +941,7 @@ function loadPassword() {
 			<label class="lhead" for="tlogcomment">Kontaktinfo einfügen</label>
 			<p style="padding:0px;font-size:12px; white-space:nowrap">Maximal 120 Zeichen</p>
 			<input type="text" name="tlogcomment" id="tlogcomment" maxlength="120" value="" placeholder="Name, Ort etc." />
+			<button id="tlogmask" type="button" onclick="addInfoText()" title="Mit Maske">&#128567;</button>
 			<button class="blarge" type="button" onclick="addNewItem()">Eintrag speichern</button>
 		</form>
 		<p class="footer">Simple Tracer <span class="fversion"></span></p>
