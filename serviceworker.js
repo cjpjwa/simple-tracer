@@ -1,9 +1,9 @@
 //########################################
 // serviceworker for simple tracer
-// Version: 29.11.2020 11:30
+// Version: 13.06.2021 19:30
 //########################################
 
-var cacheName = 'simpletracer_20_11_29_11_30';
+var cacheName = 'simpletracer_21_06_13_19_30';
 var urlsToCache = [
 	'/',
 	'/index.htm',

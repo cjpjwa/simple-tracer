@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<head> 
+<head>
 <!-- general  -->
 <title>Simple Tracer</title>
 <meta name="robots" content="noindex,nofollow" />
@@ -49,27 +49,27 @@ body				{padding:0px; margin:0px; background:#cccccc; color:#333333; font-family
 .content a			{color:#333333}
 
 /* table items start page */
-.content #tlogitems table			{padding:0px; margin:10px auto; border-collapse:collapse; background:#cccccc; font-weight:bold; font-size:16px; width:95%; border-bottom: 1px solid #cccccc;}
-.content #tlogitems table th		{padding:3px 10px 3px 15px; background:#666666; color:#eeeeee; border: none;}
+.content #tlogitems table			{padding:0px; margin:10px auto; margin-bottom:20px; border-collapse:collapse; background:#cccccc; font-weight:normal; font-size:16px; width:93%; border-bottom: 1px solid #cccccc;}
+.content #tlogitems table th		{padding:3px 10px 3px 15px; background:#666666; color:#eeeeee; border: none; font-weight:normal;}
 
-.content #tlogitems table th:first-child						{border-top-left-radius: 10px;}
-.content #tlogitems table th:last-child							{border-top-right-radius: 10px;}
+.content #tlogitems table th:first-child						{border-top-left-radius: 5px;}
+.content #tlogitems table th:last-child							{border-top-right-radius: 5px;}
 
 .content #tlogitems table td				{padding:5px 10px 0px 15px; background: none; border-top: 1px solid #999999}
-.content #tlogitems table th button			{padding:6px 8px 4px 8px; margin:4px 10px 4px 0px; color:#eeeeee; background:#333333; font-weight:bold; font-size:16px; border:1px solid #eeeeee;}
+.content #tlogitems table th button			{padding:6px 8px 4px 8px; margin:4px 10px 4px 0px; color:#eeeeee; background:#333333; font-weight:normal; font-size:16px; border:1px solid #eeeeee;}
 .content #tlogitems table th.mright button 	{padding:0px;margin:0px 10px 0px 0px;font-size:28px; background:none; border:none}
-.content #tlogitems table td button			{padding:0px 5px 0px 0px; margin:0px; color:#333333; background: none; font-weight:bold; font-size:42px; border: none}
+.content #tlogitems table td button			{padding:5px 10px 5px 0px; margin:0px; color:#333333; background: none; font-weight:normal; font-size:32px; border: none}
 .content #tlogitems table .mright	{text-align: right;}
 .content #tlogitems table .mleft	{text-align: left;}
 .content #tlogitems table .comment	{padding:0px 10px 5px 15px; font-size:14px; background:none; border-top: none; font-weight:normal;}
 .content #tlogitems tbody			{display:none;}
-.content #tlogitems table tfoot td	{background:#eeeeee;}
+.content #tlogitems table tfoot td	{background:#eeeeee; padding-top:0px}
 
 .content table .bg_1				{background:#ffE0a3;}
 .content table .bg_5,.bg_10			{background:#faceca;}
 .content table .bg_15,.bg_20		{background:#f1acab;}
 .content table .bg_25		        {background:#ff989a;}
- 
+
 /* new entry page */
 .content #newentryform					{padding:10px 0px 0px 0px; margin:0px; text-align:center}
 .content #newentryform .lhead			{padding:0px; margin:20px 10px 10px 10px; font-size:20px; font-weight:bold; display:block}
@@ -140,10 +140,11 @@ p.footer a			{color:#333333}
 // Date			Version			Description
 // 17.05.2020	0.1alpha 		initial test version
 // 25.05.2020	0.2alpha 		added novalidate attribute to entry form
-// 10.08.2020	0.3alpha 		added maskable icon
+// 10.08.2020	0.3alpha		added maskable icon
 // 13.09.2020	0.4alpha 		add app shortcut for New Entry
 // 19.11.2020	0.5alpha 		add button "with mask"
 // 29.11.2020	0.6alpha 		add button "outsite"
+// 13.06.2021	0.7alpha		update layout, fix ios14.6 indexDB problem, no timeoffset for ios14.6
 //##########################################################
 // based on: https://www.cjpj.de/appshell.htm
 // Simple App Shell, (c) 2020 webapps@cjpj, P. Janko
@@ -159,8 +160,8 @@ p.footer a			{color:#333333}
 
 //##########################################################
 //basic global vars
-var appVersion = "0.6alpha Test";
-var appRelease = "29.11.2020";
+var appVersion = "0.7alpha";
+var appRelease = "13.06.2021";
 //global array with all pages
 var appPages = new Array();
 var maxNofItems = 500; 			//set max number of items
@@ -206,9 +207,10 @@ var msgP01 = "Passwort erfolgreich gespeichert!";
 var msgP02 = "Ungültiges Passwort!\nBitte gültiges Passwort eingeben!\nZwischen 4 und 20 Zeichen,\nnur Buchstaben und Zahlen\nkeine Sonderzeichen, keine Umlaute";
 var msgP03 = "Passwörter stimmen nicht überein!\nBitte erneut versuchen.";
 var msgP04 = "Achtung!\n\nDer Browser untersützt keine Datenspeicherung.\nVerwendung nicht möglich (no localstorage)!";
-var msgP05 = "Falsches altes Passwort.\nBitte erneut versuchen!";
+var msgP05 = "Falsches Passwort.\nBitte erneut versuchen!";
 var msgP06 = "Passwortschutz wirklich entfernen?";
 var msgP07 = "Passwortschutz wurde erfolgreich entfernt!";
+var msgP08 = "\nBitte zuerst ALTES Passwort eingeben!";
 //status messages
 var msgS01 = "Verbunden";
 var msgS02 = "Getrennt";
@@ -349,7 +351,13 @@ function createIndexedDB() {
 		alert(msg08);
 		return;
 	} else {
-		var requestDB = window.indexedDB.open("tlogDB", 1);
+
+	//############### workaround ios indexdb problem
+	var dbiosWA = window.indexedDB;
+	setTimeout(() => {
+	//##############################################
+
+		var requestDB = dbiosWA.open("tlogDB", 1);		//var requestDB = window.indexedDB.open("tlogDB", 1);
 		//error
 		requestDB.onerror = function(err) {
 			//console.log("Error DB: " + err.target.errorCode);
@@ -374,6 +382,10 @@ function createIndexedDB() {
 			//update startpage
 			refreshStartPage();
 		};
+	//############### workaround ios indexdb problem
+	}, 500);
+	//##############################################
+
 	}
 }
 
@@ -539,7 +551,7 @@ function refreshStartPage() {
 					}
 				}
 				//build complete string for day
-				var dayFootStr = "<tfoot><tr><td style=\"border-bottom-left-radius:10px;\" colspan=\"2\"><div style=\"padding-left:35px\">Kontakte an diesem Tag: " + dayContactSum + "</div></td><td style=\"font-size:28px; border-bottom-right-radius: 10px;\">&nbsp;</td></tr></tfoot>";
+				var dayFootStr = "<tfoot><tr><td style=\"border-bottom-left-radius:5px;\" colspan=\"2\"><div style=\"padding-left:35px\">Kontakte an diesem Tag: <strong>" + dayContactSum + "</strong></div></td><td style=\"border-bottom-right-radius:5px;font-size:28px;\">&nbsp;</td></tr></tfoot>";
 				allItemStr = allItemStr +  dayHeadStr +  dayBodyStr + "</tbody>" + dayFootStr + "</table>";
 			}
 			//show start msg for no entries
@@ -573,7 +585,7 @@ function openCloseDay(dayID) {
 //############################################################
 //turn date object in readable date format
 //return value: visual date string 2015-12-06 - Sonntag [string]
-//- dateobj:	date Obj from input form [Obj]
+//- dateobj:		date Obj from input form [Obj]
 function makeVisualDate(dateobj) {
 	//define separators
 	var sepa1 = "-";
@@ -595,7 +607,7 @@ function makeVisualDate(dateobj) {
 //############################################################
 //turn date object in readable time format
 //return value: visual time string 11:23 [string]
-//- dateobj:	date Obj from input form [Obj]
+//- dateobj:		date Obj from input form [Obj]
 function makeVisualTime(dateobj) {
 	//define separator
 	var sepa1 = "";
@@ -603,8 +615,8 @@ function makeVisualTime(dateobj) {
 	//get time (hours and mins) from date object
 	var mikHours = dateobj.getHours();
 	var mikMins = dateobj.getMinutes();
-	//set different time for ios regarding time zone
-	if ((navigator.userAgent.toLowerCase().indexOf("iphone") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipod") !== -1)) {
+	//set different time for ios 12..., NOT for IOS 14.6 anymore
+	if (((navigator.userAgent.toLowerCase().indexOf("iphone") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipad") !== -1) || (navigator.userAgent.toLowerCase().indexOf("ipod") !== -1)) && (navigator.userAgent.toLowerCase().indexOf("os 12_") !== -1)) {
 		mikHours = mikHours+((dateobj.getTimezoneOffset())/60);
  	}
 	//always show two digit values for hours and mins and day
@@ -789,7 +801,7 @@ function changePassword(pwID1,pwID2,pwform) {
 	//check for pw rules first (do not forward spec.chars to CryptoJS)
 	var oldPW = document.getElementById("oldpw");
 	if ((oldPW.value === "") || (oldPW.value.length < pwMin) || (oldPW.value.length > pwMax) || (!(reCheckPW.test(oldPW.value)))) {
-		alert(msgP05);
+		alert(msgP05 + msgP08);
 		oldPW.focus();
 	} else {
 		//check for matching old pw
@@ -798,7 +810,7 @@ function changePassword(pwID1,pwID2,pwform) {
 			//check new passwords
 			setPassword(pwID1,pwID2,pwform);
 		} else {
-			alert(msgP05);
+			alert(msgP05 + msgP08);
 			oldPW.focus();
 		}
 	}
@@ -835,7 +847,7 @@ function removePassword() {
 	//check for pw rules first (do not forward spec.chars to CryptoJS)
 	var oldPW = document.getElementById("oldpw");
 	if ((oldPW.value === "") || (oldPW.value.length < pwMin) || (oldPW.value.length > pwMax) || (!(reCheckPW.test(oldPW.value)))) {
-		alert(msgP05);
+		alert(msgP05 + msgP08);
 		oldPW.focus();
 	} else {
 		//check for matching old pw
@@ -850,7 +862,7 @@ function removePassword() {
 				reencryptData(cryptoPW,defaultPW,"remove");
 			}
 		} else {
-			alert(msgP05);
+			alert(msgP05 + msgP08);
 			oldPW.focus();
 		}
 	}
