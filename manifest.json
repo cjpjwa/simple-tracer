@@ -21,7 +21,7 @@
 			"src": "icon_maskable.png",
 			"sizes": "196x196",
 			"type": "image/png",
-			"purpose": "any maskable"
+			"purpose": "maskable"
 		}
 	],
 	"shortcuts": [
@@ -33,9 +33,11 @@
 			"icons": [{ "src": "icon_192_new.png", "sizes": "192x192" }]
 		}
 	],
-	"start_url": "index.htm",
+	"id": "/index.htm",
+	"start_url": "/index.htm",
 	"display": "standalone",
 	"background_color": "#CCCCCC",
 	"theme_color": "#CCCCCC",
+	"description": "Simple Tracer dient zur mobilen Erstellung eines einfachen Kontakt-Tagebuchs",
 	"orientation": "any"
 }
